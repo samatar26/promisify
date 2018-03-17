@@ -18,7 +18,31 @@ describe('Promisify - fs', () => {
     readdirAsync(path.join(__dirname, 'not found'), { encoding: 'utf8' })
       .then(dir => dir)
       .catch(err => {
-        expect(err).toEqual('folder not found')
+        expect(err.code).toEqual('ENOENT')
+      })
+  })
+
+  test('fs-readFile should be promisified', () => {
+    const readFileAsync = promisify(fs.readFile)
+
+    readFileAsync(path.join(__dirname, 'mocks', 'test.txt'), {
+      encoding: 'utf8',
+    })
+      .then(file => {
+        expect(file).toEqual('TestFile')
+      })
+      .catch(err => err)
+  })
+
+  test('fs-readFile should be promosified and return file not found upon error', () => {
+    const readFileAsync = promisify(fs.readFile)
+
+    readFileAsync(path.join(__dirname, 'mocks', 'notFound.txt'), {
+      encoding: 'utf8',
+    })
+      .then(file => file)
+      .catch(err => {
+        expect(err.code).toEqual('ENOENT')
       })
   })
 })
