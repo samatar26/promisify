@@ -1,6 +1,7 @@
 const fs = require('fs')
 const path = require('path')
 const promisify = require('./')
+const util_promisify = require('util.promisify')
 
 describe('Promisify - fs', () => {
   test('fs-readdir should be promisified', () => {
@@ -44,5 +45,21 @@ describe('Promisify - fs', () => {
       .catch(err => {
         expect(err.code).toEqual('ENOENT')
       })
+  })
+
+  test('fs-exists should be promisified', () => {
+    const existsAsync = promisify(fs.exists)
+
+    existsAsync(path.join(__dirname, 'mocks', 'test.txt')).then(file => {
+      expect(file).toEqual(true)
+    })
+  })
+
+  test('fs-exists should be promisified and return false if file doesnt exist', () => {
+    const existsAsync = promisify(fs.exists)
+
+    existsAsync(path.join(__dirname, 'mocks', 'notfound.txt')).then(file => {
+      expect(file).toEqual(false)
+    })
   })
 })

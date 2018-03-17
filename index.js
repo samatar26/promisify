@@ -1,8 +1,9 @@
 const promisify = fn => (...args) => {
   return new Promise((resolve, reject) => {
     fn(...args, (err, res) => {
-      if (err) reject(err)
-      resolve(res)
+      if (args.length === 1) return resolve(err)
+      if (err) return reject(err)
+      return resolve(res)
     })
   })
 }
