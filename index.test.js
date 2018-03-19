@@ -1,7 +1,7 @@
 const fs = require('fs')
 const path = require('path')
-const promisify = require('./')
-const util_promisify = require('util.promisify')
+const promisify = require('./node_promisify')
+// const util_promisify = require('util.promisify')
 
 describe('Promisify - fs', () => {
   test('fs-readdir should be promisified', () => {
@@ -47,19 +47,23 @@ describe('Promisify - fs', () => {
       })
   })
 
-  test('fs-exists should be promisified', () => {
-    const existsAsync = promisify(fs.exists)
+  test('fs-writeFile should be promisified and create a new file', () => {
+    const writeFileAsync = promisify(fs.writeFile)
 
-    existsAsync(path.join(__dirname, 'mocks', 'test.txt')).then(file => {
-      expect(file).toEqual(true)
-    })
+    writeFileAsync(path.join(__dirname, 'mocks', 'test.txt'), 'Testing12').then(
+      err => {
+        expect(err).toEqual(undefined)
+      }
+    )
   })
 
-  test('fs-exists should be promisified and return false if file doesnt exist', () => {
-    const existsAsync = promisify(fs.exists)
+  test("fs-writeFile should return an error when it can't write to file", () => {
+    const writeFileAsync = promisify(fs.writeFile)
 
-    existsAsync(path.join(__dirname, 'mocks', 'notfound.txt')).then(file => {
-      expect(file).toEqual(false)
-    })
+    writeFileAsync(path.join(__dirname, 'mocks'), 'Testing12')
+      .then(err => err)
+      .catch(err => {
+        expect(err.code).toEqual('EISDIR')
+      })
   })
 })
