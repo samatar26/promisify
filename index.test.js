@@ -1,7 +1,7 @@
 const fs = require('fs')
 const path = require('path')
 const promisify = require('./node_promisify')
-// const util_promisify = require('util.promisify')
+const glob = require('glob')
 
 describe('Promisify - fs', () => {
   test('fs-readdir should be promisified', () => {
@@ -65,5 +65,24 @@ describe('Promisify - fs', () => {
       .catch(err => {
         expect(err.code).toEqual('EISDIR')
       })
+  })
+})
+
+describe('Promisify - glob', () => {
+  test('glob should be promisified', () => {
+    const globAsync = promisify(glob)
+
+    globAsync('mocks/*.txt').then(files => {
+      expect(files).toHaveLength(1)
+      expect(files[0]).toEqual('mocks/test.txt')
+    })
+  })
+
+  test('glob should catch an error', () => {
+    const globAsync = promisify(glob)
+
+    globAsync(9).catch(err => {
+      expect(err instanceof Error).toEqual(true)
+    })
   })
 })
